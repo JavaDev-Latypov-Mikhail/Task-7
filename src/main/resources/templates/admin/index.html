@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Management</title>
+</head>
+<body>
+
+<h1>User Management</h1>
+<div>
+    <input type="button" value="Add new" onclick="window.location.href='admin/create'">
+</div>
+<br>
+<div>
+    <table th:border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th> <!-- Изменено на Age -->
+            <th>Email</th> <!-- Изменено на Email -->
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}">1</td>
+            <td th:text="${user.name}">User Name</td>
+            <td th:text="${user.age}">0</td> <!-- Здесь отображается Age -->
+            <td th:text="${user.email}">user@example.com</td> <!-- Здесь отображается Email -->
+            <td th:text="${#strings.listJoin(user.roles.![#strings.replace(name, 'ROLE_', '')], ', ')}">Roles</td>
+            <td>
+                <div style="display: flex; gap: 10px;">
+                    <form th:method="GET" th:action="@{/admin/users/{id}/edit(id=${user.id})}">
+                        <input type="submit" value="Update">
+                    </form>
+                    |
+                    <form th:method="DELETE" th:action="@{/admin/users/{id}(id=${user.id})}">
+                        <input type="submit" value="Delete">
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${param.success}" style="color: green;">
+        User action was successful!
+    </div>
+    <div th:if="${param.error}" style="color: red;">
+        An error occurred while performing the user action. Please try again.
+    </div>
+</div>
+<br>
+<form th:action="@{/logout}" th:method="POST">
+    <input type="submit" value="Logout">
+</form>
+
+</body>
+</html>

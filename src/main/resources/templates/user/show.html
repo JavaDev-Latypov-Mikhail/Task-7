@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Подключите стили, если они есть -->
+</head>
+<body>
+
+<h1>User Profile</h1>
+
+<div>
+    <h2 th:text="${user.name}">User Name</h2>
+    <p><strong>Email:</strong> <span th:text="${user.email}">user@example.com</span></p>
+    <p><strong>Roles:</strong> <span th:text="${user.roles}">User Roles</span></p>
+</div>
+
+<div>
+    <h3>Actions:</h3>
+    <a th:href="@{/user/edit/{id}(id=${user.id})}">Edit Profile</a>
+    <a th:href="@{/user/delete/{id}(id=${user.id})}" style="color:red;" th:onclick="return confirm('Are you sure you want to delete this user?')">Delete Profile</a>
+</div>
+
+<div th:if="${param.success}" style="color: green;">
+    Profile updated successfully!
+</div>
+<div th:if="${param.error}" style="color: red;">
+    Error while updating the profile. Please try again.
+</div>
+
+</body>
+</html>
