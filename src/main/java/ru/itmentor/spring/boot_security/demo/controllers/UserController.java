@@ -3,6 +3,7 @@ package ru.itmentor.spring.boot_security.demo.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.services.UserService;
@@ -17,10 +18,8 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public String show(@AuthenticationPrincipal User user) {
-        if (user == null) {
-            return "redirect:/login";
-        }
+    public String show(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
         return "user/show";
     }
 }

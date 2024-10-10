@@ -26,6 +26,9 @@
             <button type="submit">Login</button>
         </div>
     </form>
+    <form th:action="@{/registration}" th:method="GET">
+        <input type="submit" value="Registration">
+    </form>
 
     <div th:if="${param.error}" style="color: red;">
         Invalid username or password. Please try again.
