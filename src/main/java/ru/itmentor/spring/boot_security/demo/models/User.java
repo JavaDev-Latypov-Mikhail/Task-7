@@ -7,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,7 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -39,8 +38,6 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    @Transient
-    private List<Long> roleIds;
 
     public User() {
     }
@@ -87,15 +84,6 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    // Геттер и сеттер для roleIds
-    public List<Long> getRoleIds() {
-        return roleIds;
-    }
-
-    public void setRoleIds(List<Long> roleIds) {
-        this.roleIds = roleIds;
     }
 
     @Override
@@ -151,7 +139,6 @@ public class User implements UserDetails {
                ", email='" + email + '\'' +
                ", password='" + password + '\'' +
                ", roles=" + roles +
-               ", roleIds=" + roleIds +
                '}';
     }
 }

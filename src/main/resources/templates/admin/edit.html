@@ -9,7 +9,8 @@
 
 <h1>Edit User</h1>
 
-    <form th:action="@{/admin/users/{id}(id=${user.id})}" th:object="${user}" method="post">
+    <form th:action="@{/admin/users}" th:object="${user}" th:method="patch">
+        <input type="hidden"  th:field="*{id}"/>
         <label for="name">Name:</label>
         <input type="text" id="name" th:field="*{name}" required/>
 
@@ -24,8 +25,7 @@
 
         <label>Roles:</label>
         <div th:each="role : ${roles}">
-            <input type="checkbox" th:value="${role.id}" th:field="*{roleIds}" th:id="'role_' + ${role.id}" />
-            <span th:text="${role.name}">Role Name</span>
+            <input type="checkbox" th:field="*{roles}" th:value="${role.id}" th:text="${role.name.replace('ROLE_','')}"/>
         </div>
 
         <button type="submit">Update</button>

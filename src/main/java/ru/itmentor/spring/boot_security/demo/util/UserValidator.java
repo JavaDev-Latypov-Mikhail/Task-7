@@ -2,6 +2,7 @@ package ru.itmentor.spring.boot_security.demo.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import ru.itmentor.spring.boot_security.demo.models.User;
@@ -28,5 +29,10 @@ public class UserValidator implements Validator {
         if (userRepository.findByName(user.getUsername()).isPresent()) {
             errors.rejectValue("username", "", "This user already exist");
         }
+    }
+
+    public boolean validateUserName(User user, BindingResult bindingResult) {
+        validate(user, bindingResult);
+        return !bindingResult.hasErrors();
     }
 }
