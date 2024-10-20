@@ -5,8 +5,12 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 public class UserDTO {
 
+    @Min(value = 1, message = "Id should be greater than 0")
+    private Long id;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     private String name;
@@ -21,6 +25,17 @@ public class UserDTO {
     @NotEmpty(message = "Password should not be empty")
     @Size(min = 5, max = 30, message = "Password should be between 5 and 30 characters")
     private String password;
+
+    @NotEmpty(message = "Roles should not be empty")
+    private Set<String> roles;
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
 
     public String getName() {
         return name;
@@ -52,5 +67,13 @@ public class UserDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

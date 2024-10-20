@@ -1,6 +1,10 @@
 package ru.itmentor.spring.boot_security.demo.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,16 +22,19 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @NotBlank(message = "Name cannot be blank")
+    @Size(min = 2, max = 50, message = "Name should be between 2 and 50 characters")
     private String name;
 
-    @Column(name = "age")
+    @Min(value = 18, message = "Age should not be less than 18")
     private int age;
 
-    @Column(name = "email")
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email cannot be blank")
     private String email;
 
-    @Column(name = "password")
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 4, message = "Password should be at least 4 characters long")
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)

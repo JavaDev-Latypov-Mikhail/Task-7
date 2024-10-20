@@ -10,9 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findById(Long id);
-
-    void deleteById(Long id);
     @Query("SELECT u FROM User u JOIN FETCH u.roles WHERE u.name = :name")
     Optional<User> findByName(@Param("name") String name);
 

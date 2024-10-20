@@ -1,10 +1,13 @@
 package ru.itmentor.spring.boot_security.demo.dto;
 
+import java.util.Set;
+
 public class UserResponseDTO {
 
     private String name;
     private int age;
     private String email;
+    private Set<String> roles;
 
     public String getName() {
         return name;
@@ -28,5 +31,13 @@ public class UserResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
     }
 }
