@@ -17,8 +17,8 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th>Age</th> <!-- Изменено на Age -->
-            <th>Email</th> <!-- Изменено на Email -->
+            <th>Age</th>
+            <th>Email</th>
             <th>Role</th>
             <th>Actions</th>
         </tr>
@@ -27,8 +27,8 @@
         <tr th:each="user : ${users}">
             <td th:text="${user.id}">1</td>
             <td th:text="${user.name}">User Name</td>
-            <td th:text="${user.age}">0</td> <!-- Здесь отображается Age -->
-            <td th:text="${user.email}">user@example.com</td> <!-- Здесь отображается Email -->
+            <td th:text="${user.age}">0</td>
+            <td th:text="${user.email}">user@example.com</td>
             <td th:text="${#strings.listJoin(user.roles.![#strings.replace(name, 'ROLE_', '')], ', ')}">Roles</td>
             <td>
                 <div style="display: flex; gap: 10px;">

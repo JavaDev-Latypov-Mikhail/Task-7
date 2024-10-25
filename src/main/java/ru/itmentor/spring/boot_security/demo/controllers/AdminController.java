@@ -1,74 +1,79 @@
 package ru.itmentor.spring.boot_security.demo.controllers;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.itmentor.spring.boot_security.demo.dto.UserDTO;
+import ru.itmentor.spring.boot_security.demo.exceptions.user_exeptions.InvalidInputException;
+import ru.itmentor.spring.boot_security.demo.mapper.UserMapper;
 import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.services.RoleService;
 import ru.itmentor.spring.boot_security.demo.services.UserService;
-import ru.itmentor.spring.boot_security.demo.util.UserValidator;
 
-@Controller
-@RequestMapping("/admin")
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/admin")
 public class AdminController {
+
     private final UserService userService;
     private final RoleService roleService;
-    private final UserValidator userValidator;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService, UserValidator userValidator) {
+    public AdminController(UserService userService, RoleService roleService,
+                           UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.roleService = roleService;
-        this.userValidator = userValidator;
-
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping
-    public String index(Model model) {
-        model.addAttribute("users", userService.findAll());
-        return "admin/index";
+    @GetMapping("/users")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.findAllUserDTOs();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PostMapping("/createUser")
-    public String createUser(@ModelAttribute("user") User user, BindingResult bindingResult, Model model) {
-        if (!userValidator.validateUserName(user, bindingResult)) {
-            model.addAttribute("roles", roleService.findAll()); // Путь для ролей
-            return "admin/create";
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        UserDTO userOpt = userService.findByIdUserDTO(id);
+        return new ResponseEntity<>(userOpt, HttpStatus.OK);
+    }
+
+    @PostMapping("/user")
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new InvalidInputException(bindingResult.getAllErrors()
+                    .stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(", "))
+            );
         }
+
+        User user = userMapper.mapToEntity(userDTO, roleService.findAllRoles());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
         userService.save(user);
-        return "redirect:/admin";
+
+        return new ResponseEntity<>(userMapper.mapToDTO(user), HttpStatus.CREATED);
     }
 
-    @GetMapping("/create")
-    public String createUserForm(Model model) {
-        model.addAttribute("user", new User());
-        model.addAttribute("roles", roleService.findAll());
-        return "admin/create";
+    @PutMapping("/user")
+    public ResponseEntity<UserDTO> updateUser(@RequestBody @Valid UserDTO userDTO) {
+        return new ResponseEntity<>(userService.userUpdateDTO(userDTO), HttpStatus.OK);
+
     }
 
-    @GetMapping("/users/{id}/edit")
-    public String editUser(@PathVariable Long id, Model model) {
-        User user = userService.findById(id);
-        if (user == null) {
-            return "redirect:/admin";
-        }
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roleService.findAll());
-        return "admin/edit";
-    }
-
-    @PatchMapping("/users")
-    public String updateUser(@ModelAttribute("user") User user, BindingResult bindingResult) {
-        if (userValidator.validateUserName(user, bindingResult)) return "/admin/edit";
-        userService.update(user);
-        return "redirect:/admin";
-    }
-
-    @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

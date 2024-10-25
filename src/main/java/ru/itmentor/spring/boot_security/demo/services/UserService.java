@@ -1,11 +1,16 @@
 package ru.itmentor.spring.boot_security.demo.services;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.transaction.annotation.Transactional;
+import ru.itmentor.spring.boot_security.demo.dto.UserDTO;
+import ru.itmentor.spring.boot_security.demo.dto.UserResponseDTO;
 import ru.itmentor.spring.boot_security.demo.models.User;
 
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
+
+    UserDTO findByEmailUserDTO(String email);
 
     List<User> findAll();
 
@@ -16,4 +21,22 @@ public interface UserService extends UserDetailsService {
     void delete(Long id);
 
     void update(User user);
+
+    User findByEmail(String name);
+
+
+
+    void userSaveDTO(UserDTO userDTO);
+
+
+    UserDTO userUpdateDTO(UserDTO userDTO);
+
+    List<UserDTO> findAllUserDTOs();
+
+    UserDTO findByIdUserDTO(Long id);
+
+
+    void register(User user);
+
+    UserResponseDTO showUser(User user);
 }
