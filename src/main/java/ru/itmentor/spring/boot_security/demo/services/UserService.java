@@ -25,17 +25,17 @@ public interface UserService extends UserDetailsService {
     User findByEmail(String name);
 
 
-    @Transactional
+
     void userSaveDTO(UserDTO userDTO);
 
-    @Transactional
+
     UserDTO userUpdateDTO(UserDTO userDTO);
 
     List<UserDTO> findAllUserDTOs();
 
     UserDTO findByIdUserDTO(Long id);
 
-    @Transactional
+
     void register(User user);
 
     UserResponseDTO showUser(User user);

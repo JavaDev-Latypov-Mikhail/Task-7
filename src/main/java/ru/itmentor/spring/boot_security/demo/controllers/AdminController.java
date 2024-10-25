@@ -65,14 +65,10 @@ public class AdminController {
         return new ResponseEntity<>(userMapper.mapToDTO(user), HttpStatus.CREATED);
     }
 
-    @PutMapping("/user/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Valid UserDTO userDTO) {
-        userDTO.setId(id);
-        try {
-            return new ResponseEntity<>(userService.userUpdateDTO(userDTO), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            throw new InvalidInputException(e.getMessage());
-        }
+    @PutMapping("/user")
+    public ResponseEntity<UserDTO> updateUser(@RequestBody @Valid UserDTO userDTO) {
+        return new ResponseEntity<>(userService.userUpdateDTO(userDTO), HttpStatus.OK);
+
     }
 
     @DeleteMapping("/user/{id}")

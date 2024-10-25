@@ -1,12 +1,12 @@
 package ru.itmentor.spring.boot_security.demo.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmentor.spring.boot_security.demo.dto.UserDTO;
 import ru.itmentor.spring.boot_security.demo.dto.UserResponseDTO;
+import ru.itmentor.spring.boot_security.demo.exceptions.user_exeptions.UserNotFoundException;
 import ru.itmentor.spring.boot_security.demo.mapper.UserMapper;
 import ru.itmentor.spring.boot_security.demo.models.User;
 import ru.itmentor.spring.boot_security.demo.repositories.UserRepository;
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Override
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UserNotFoundException("User not found");
         }
         userRepository.deleteById(id);
     }
@@ -89,21 +89,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user) {
-
-        User existingUser = findById(user.getId());
-
-        if (!user.getPassword().equals(existingUser.getPassword())) {
-            encodePassword(user);
+        if (userRepository.existsById(user.getId())) {
+            User existingUser = findById(user.getId());
+            if (!user.getPassword().equals(existingUser.getPassword())) {
+                encodePassword(user);
+            } else {
+                user.setPassword(existingUser.getPassword());
+            }
+            userRepository.save(user);
         } else {
-            user.setPassword(existingUser.getPassword());
+            throw new UserNotFoundException("User not found with id: " + user.getId());
         }
-        userRepository.save(user);
+
     }
 
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 
     @Override
@@ -122,9 +125,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+    public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
         User user = userRepository.findByName(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         return user;
     }
 
